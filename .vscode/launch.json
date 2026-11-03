@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Mindmate server",
+            "request": "launch",
+            "mainClass": "mindmate.Main",
+            "cwd": "${workspaceFolder}/server",
+            "classPaths": [
+                "${workspaceFolder}/server/out",
+                "${workspaceFolder}/lib/*"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

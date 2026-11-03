@@ -1,0 +1,26 @@
+{
+  "name": "Mindmate",
+  "short_name": "Mindmate",
+  "description": "A private space for students to check in with how they are feeling. Works offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7f5",
+  "theme_color": "#2f6f62",
+  "lang": "en-ZA",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

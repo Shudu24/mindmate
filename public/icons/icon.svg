@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Mindmate">
+  <rect width="512" height="512" rx="112" fill="#2f6f62"/>
+  <!-- A simple open outline: a head in profile with a steady line inside,
+       standing for checking in rather than being measured. -->
+  <path d="M168 372c-38-30-60-74-60-124 0-84 66-148 150-148 78 0 142 56 142 132 0 62-42 104-104 104h-30v44c0 14-12 22-24 16l-74-24z"
+        fill="none" stroke="#ffffff" stroke-width="26" stroke-linejoin="round"/>
+  <path d="M176 246h44l22-40 28 76 22-36h44"
+        fill="none" stroke="#ffffff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

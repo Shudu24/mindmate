@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6f62">
+<meta name="description" content="A private space for students to check in with how they are feeling. Works offline.">
+<title>Mindmate</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ---------------------------------------------------------------
+     First run. Shown once, before anything else exists.
+---------------------------------------------------------------- -->
+<div id="onboarding" class="overlay" hidden>
+  <div class="overlay-inner">
+
+    <section class="step" data-step="1">
+      <p class="step-count">1 of 4</p>
+      <h1>Mindmate</h1>
+      <p class="lede">A private space to check in with how you're feeling.</p>
+      <div class="card card-quiet">
+        <p><strong>What this is.</strong> Somewhere to notice how you're doing, write things
+           down, and see it over time.</p>
+        <p><strong>What it isn't.</strong> It will never diagnose you or tell you what's wrong.
+           It isn't a counsellor and it isn't an emergency service. When something is serious,
+           it points you to a person.</p>
+      </div>
+      <button type="button" class="btn btn-primary" data-next>Continue</button>
+    </section>
+
+    <section class="step" data-step="2" hidden>
+      <p class="step-count">2 of 4</p>
+      <h1>Your writing stays here</h1>
+      <div class="card card-quiet">
+        <p>Everything you write is saved on this device and <strong>encrypted</strong>. There's
+           no account and nothing is uploaded.</p>
+        <p>We don't ask for your name, your student number or your date of birth, because the
+           app doesn't need them.</p>
+        <p>You can export everything or delete all of it at any time, from the Data tab.</p>
+      </div>
+      <button type="button" class="btn btn-primary" data-next>Continue</button>
+      <button type="button" class="btn btn-ghost" data-back>Back</button>
+    </section>
+
+    <section class="step" data-step="3" hidden>
+      <p class="step-count">3 of 4</p>
+      <h1>What's going on for you?</h1>
+      <p class="sub">Pick any that fit, or none. It only changes what the app suggests, and you
+         can change it later. Nothing here is shared.</p>
+      <div class="tag-row" id="onboard-topics"><!-- filled by app.js --></div>
+      <button type="button" class="btn btn-primary" data-next>Continue</button>
+      <button type="button" class="btn btn-ghost" data-back>Back</button>
+    </section>
+
+    <section class="step" data-step="4" hidden>
+      <p class="step-count">4 of 4</p>
+      <h1>One optional question</h1>
+      <p class="sub">Roughly how old are you? This helps us word things suitably. Skip it if
+         you'd rather not say.</p>
+      <div class="tag-row" id="onboard-age">
+        <button type="button" class="tag" data-age="under-20" aria-pressed="false">Under 20</button>
+        <button type="button" class="tag" data-age="20-24" aria-pressed="false">20 to 24</button>
+        <button type="button" class="tag" data-age="25-29" aria-pressed="false">25 to 29</button>
+        <button type="button" class="tag" data-age="30-plus" aria-pressed="false">30 or older</button>
+      </div>
+      <button type="button" class="btn btn-primary" id="onboard-finish">Start using Mindmate</button>
+      <button type="button" class="btn btn-ghost" data-back>Back</button>
+    </section>
+
+  </div>
+</div>
+
+<!-- ---------------------------------------------------------------
+     Passphrase lock. Only appears when a passphrase has been set.
+---------------------------------------------------------------- -->
+<div id="lockscreen" class="overlay" hidden>
+  <div class="overlay-inner">
+    <h1>Locked</h1>
+    <p class="sub">Enter your passphrase to read your entries on this device.</p>
+    <form id="unlock-form" class="card" autocomplete="off">
+      <label class="field">
+        <span class="field-label">Passphrase</span>
+        <input type="password" id="unlock-pass" autocomplete="current-password">
+      </label>
+      <button type="submit" class="btn btn-primary">Unlock</button>
+      <p class="form-hint" id="unlock-hint">There is no way to reset this. Only you have it.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ---------------------------------------------------------------
+     Sign in / create account. Optional throughout - the app works
+     as a guest and this only unlocks the connected features.
+---------------------------------------------------------------- -->
+<div id="auth" class="overlay" hidden>
+  <div class="overlay-inner">
+    <h1 id="auth-title">Create an account</h1>
+    <p class="sub" id="auth-sub">
+      Only needed for features that use a connection. Your check-ins and journal stay on this
+      device either way.
+    </p>
+
+    <div class="card">
+      <form id="auth-form" autocomplete="off">
+        <label class="field">
+          <span class="field-label">Username</span>
+          <input type="text" id="auth-username" autocomplete="username"
+                 placeholder="Something that isn't your real name">
+          <span class="field-note">Letters, numbers, dot, dash or underscore. 3 to 50 characters.</span>
+        </label>
+
+        <label class="field">
+          <span class="field-label">Password</span>
+          <input type="password" id="auth-password" autocomplete="current-password">
+          <span class="field-note" id="auth-pw-note">At least 8 characters.</span>
+        </label>
+
+        <label class="field" id="auth-display-field">
+          <span class="field-label">What should we call you? <span class="opt">optional</span></span>
+          <input type="text" id="auth-display" maxlength="100" placeholder="A first name or a nickname">
+        </label>
+
+        <button type="submit" class="btn btn-primary" id="auth-submit">Create account</button>
+        <p class="form-hint" id="auth-hint"></p>
+      </form>
+    </div>
+
+    <p class="switch-line">
+      <span id="auth-switch-text">Already have an account?</span>
+      <button type="button" class="linkish" id="auth-switch">Sign in instead</button>
+    </p>
+
+    <button type="button" class="btn btn-ghost" id="auth-cancel">Not now</button>
+
+    <div class="card card-quiet">
+      <p><strong>We don't ask for your real name, student number or date of birth.</strong>
+         Pick a username that isn't identifiable if you'd rather not be recognised.</p>
+    </div>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="wordmark">Mindmate</span>
+    <span id="net-state" class="net-state" data-state="online" title="Connection status">Offline ready</span>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- ---------------------------------------------------------------
+       Home: today's check-in
+  ---------------------------------------------------------------- -->
+  <section id="view-home" class="view" data-view="home">
+    <h1 class="greeting" id="greeting">How are you doing?</h1>
+    <p class="sub">There are no right answers here, and nothing you write leaves this device.</p>
+
+    <form id="checkin-form" class="card" autocomplete="off">
+      <fieldset class="mood-set">
+        <legend>Right now I feel</legend>
+        <div class="mood-row" role="radiogroup" aria-label="How you feel right now">
+          <!-- filled by app.js so the labels stay in one place -->
+        </div>
+      </fieldset>
+
+      <fieldset class="tag-set">
+        <legend>What's been on your mind? <span class="opt">optional</span></legend>
+        <div class="tag-row" id="checkin-tags"><!-- filled by app.js --></div>
+      </fieldset>
+
+      <label class="field">
+        <span class="field-label">Anything you want to note? <span class="opt">optional</span></span>
+        <textarea id="checkin-note" rows="3" maxlength="600"
+                  placeholder="A sentence is plenty. Or leave it blank."></textarea>
+      </label>
+
+      <button type="submit" class="btn btn-primary" id="checkin-save" disabled>Save check-in</button>
+      <p class="form-hint" id="checkin-hint">Pick how you're feeling to save.</p>
+    </form>
+
+    <div id="checkin-done" class="card card-quiet" hidden>
+      <p class="done-line">Saved. Thanks for checking in.</p>
+      <div id="checkin-followup"></div>
+      <button type="button" class="btn btn-ghost" id="checkin-again">Check in again</button>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------------
+       Journal
+  ---------------------------------------------------------------- -->
+  <section id="view-journal" class="view" data-view="journal" hidden>
+    <h1>Journal</h1>
+    <p class="sub">Private writing, stored on this device only.</p>
+
+    <form id="journal-form" class="card" autocomplete="off">
+      <label class="field">
+        <span class="field-label">Title <span class="opt">optional</span></span>
+        <input type="text" id="journal-title" maxlength="80" placeholder="Untitled">
+      </label>
+      <label class="field">
+        <span class="field-label">Entry</span>
+        <textarea id="journal-body" rows="8" maxlength="5000"
+                  placeholder="Write as much or as little as you like."></textarea>
+      </label>
+      <button type="submit" class="btn btn-primary" id="journal-save" disabled>Save entry</button>
+    </form>
+
+    <h2 class="section-head">Earlier entries</h2>
+    <div id="journal-list" class="list"></div>
+  </section>
+
+  <!-- ---------------------------------------------------------------
+       History
+  ---------------------------------------------------------------- -->
+  <section id="view-history" class="view" data-view="history" hidden>
+    <h1>Your check-ins</h1>
+    <p class="sub">A record of how you've been feeling. It is not a score or an assessment.</p>
+
+    <div class="card">
+      <h2 class="section-head flush">Last 14 days</h2>
+      <div id="spark" class="spark" role="img" aria-label="Your check-ins over the last 14 days"></div>
+      <p id="history-summary" class="summary"></p>
+    </div>
+
+    <h2 class="section-head">Every check-in</h2>
+    <div id="history-list" class="list"></div>
+  </section>
+
+  <!-- ---------------------------------------------------------------
+       Support
+  ---------------------------------------------------------------- -->
+  <section id="view-support" class="view" data-view="support" hidden>
+    <h1>Getting support</h1>
+    <p class="sub">Mindmate is a place to reflect. It does not diagnose anything, and it is not a
+       substitute for talking to someone who can help.</p>
+
+    <div class="card card-urgent">
+      <h2 class="section-head flush">If you need help right now</h2>
+      <p class="placeholder-note">
+        <strong>Not yet filled in.</strong> Verified crisis line details must be added here before
+        anyone uses this app. See <code>docs/SUPPORT-CONTENT.md</code>.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 class="section-head flush">On campus</h2>
+      <p class="placeholder-note">
+        <strong>Not yet filled in.</strong> Add your institution's student counselling service:
+        where it is, opening hours, how to book, and whether it costs anything.
+      </p>
+    </div>
+
+    <div class="card card-quiet">
+      <h2 class="section-head flush">Talking to someone you know</h2>
+      <p>Telling one person is often the hardest and most useful step. A friend, a family member,
+         a lecturer you trust, a residence warden. You do not have to explain it well.</p>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------------
+       Settings / privacy
+  ---------------------------------------------------------------- -->
+  <section id="view-settings" class="view" data-view="settings" hidden>
+    <h1>Your data</h1>
+
+    <div class="card" id="account-card">
+      <h2 class="section-head flush">Account</h2>
+      <p id="account-state" class="summary"></p>
+      <div id="account-explain"></div>
+      <div id="account-actions"></div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-head flush">Where it lives</h2>
+      <p>Everything you enter is saved in this browser on this device, using IndexedDB. There is no
+         account, no server, and nothing is uploaded. Clearing your browser data for this site
+         deletes it permanently.</p>
+      <p id="storage-line" class="summary"></p>
+    </div>
+
+    <div class="card">
+      <h2 class="section-head flush">Encryption</h2>
+      <p id="crypto-state" class="summary"></p>
+      <div id="crypto-explain"></div>
+
+      <form id="passphrase-form" autocomplete="off">
+        <label class="field">
+          <span class="field-label">Set a passphrase <span class="opt">optional</span></span>
+          <input type="password" id="pass-new" autocomplete="new-password"
+                 placeholder="At least 8 characters">
+        </label>
+        <label class="field">
+          <span class="field-label">Type it again</span>
+          <input type="password" id="pass-again" autocomplete="new-password">
+        </label>
+        <button type="submit" class="btn btn-ghost">Turn on passphrase lock</button>
+        <p class="form-hint" id="pass-hint">
+          If you forget it, your entries cannot be recovered by anyone, including us.
+        </p>
+      </form>
+
+      <button type="button" class="btn btn-ghost" id="lock-now" hidden>Lock now</button>
+    </div>
+
+    <div class="card">
+      <h2 class="section-head flush">What you told us</h2>
+      <p class="summary" id="topics-line"></p>
+      <button type="button" class="btn btn-ghost btn-sm" id="edit-topics">Change</button>
+    </div>
+
+    <div class="card">
+      <h2 class="section-head flush">Export</h2>
+      <p>Download everything as a JSON file you keep yourself.</p>
+      <button type="button" class="btn btn-ghost" id="export-btn">Export my data</button>
+    </div>
+
+    <div class="card card-danger">
+      <h2 class="section-head flush">Delete everything</h2>
+      <p>Removes every check-in and journal entry from this device. This cannot be undone.</p>
+      <button type="button" class="btn btn-danger" id="wipe-btn">Delete all my data</button>
+    </div>
+  </section>
+
+</main>
+
+<a class="help-fab" href="#support">Need help now?</a>
+
+<nav class="tabbar" aria-label="Main">
+  <a href="#home"    data-tab="home"><span class="tab-ico" aria-hidden="true">◎</span>Check in</a>
+  <a href="#journal" data-tab="journal"><span class="tab-ico" aria-hidden="true">✎</span>Journal</a>
+  <a href="#history" data-tab="history"><span class="tab-ico" aria-hidden="true">▤</span>History</a>
+  <a href="#support" data-tab="support"><span class="tab-ico" aria-hidden="true">✚</span>Support</a>
+  <a href="#settings" data-tab="settings"><span class="tab-ico" aria-hidden="true">⚙</span>Data</a>
+</nav>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="js/crypto.js"></script>
+<script src="js/api.js"></script>
+<script src="js/db.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

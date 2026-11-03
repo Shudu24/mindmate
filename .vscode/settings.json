@@ -1,0 +1,26 @@
+{
+    "java.project.sourcePaths": [
+        "server/src"
+    ],
+    "java.project.outputPath": "server/bin",
+    "java.project.referencedLibraries": [
+        "lib/*.jar"
+    ],
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "files.exclude": {
+        "server/out": true,
+        "server/bin": true
+    },
+    "code-runner.runInTerminal": false,
+    "code-runner.fileDirectoryAsCwd": false,
+    "code-runner.executorMap": {
+        "java": "cd /d \"$workspaceRoot\\server\" && javac -encoding UTF-8 -cp \"../lib/*\" -d out src/mindmate/*.java src/mindmate/db/*.java src/mindmate/model/*.java src/mindmate/dao/*.java src/mindmate/http/*.java src/mindmate/util/*.java && java -cp \"out;../lib/*\" mindmate.Main"
+    },
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "C:\\Program Files\\Java\\jdk-17",
+            "default": true
+        }
+    ]
+}

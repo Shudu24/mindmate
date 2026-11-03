@@ -1,0 +1,14 @@
+# Copy this file to db.properties and fill in your own values.
+# db.properties is not committed, because it holds a password.
+
+db.host=localhost
+db.port=3306
+db.name=mindmate_db
+db.user=root
+db.password=YOUR_MYSQL_PASSWORD_HERE
+
+server.port=8080
+server.webroot=../public
+
+# Request logging: api (API calls and failed static requests), all, or off.
+server.log=api
